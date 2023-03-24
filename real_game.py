@@ -1,7 +1,7 @@
 #version 1.1:
 #the player has to type go (direction) to go in a direction.
 #this is so that they can do different commands, like take
-#they can type the whole direction, not just s now
+#they can type the whole direction, not just "s" now
 
 WIDTH = 3
 STARTING_POS = 0
@@ -17,16 +17,17 @@ inventory = []
 #the map. "desc" is the description of the place,
 #"pos" is the player position in numbers,
 #and "directions" is the available directions that the player can go
+
 map = [{"desc":"You are in A1. This is the starting position.", "pos":0, "directions":"S/E"}, 
 {"desc":"You are in A2.", "pos":1, "directions":"S/E/W"},
-{"desc":"You are in A3. There is a knife.", "pos":2, "directions": "S/W", "items":"Knife"},
+{"desc":"You are in A3. There is a knife.", "pos":2, "directions": "S/W", "items":["KNIFE"]},
 {"desc":"You are in B1.", "pos":3, "directions": "N/S/E"},
 {"desc":"You are in B2.", "pos":4, "directions": "N/S/E/W"},
 {"desc":"You are in B3.", "pos":5, "directions": "N/S/W"},
 {"desc":"You are in C1.", "pos":6, "directions": "N/E"},
 {"desc":"You are in C2", "pos":7, "directions": "N/E/W"},
 {"desc":"You are in C3", "pos":8, "directions": "N/W"},]
- 
+
 def move(pos, direction, map):
     """Takes the player position and the direction to move to (N, S, E, or W).
         Returns the new pos of the player after moving."""
@@ -49,14 +50,38 @@ def move(pos, direction, map):
 
         #prints the new place description
         print(map[pos]["desc"])
-        print(f"You can go {available_directions}.")
+
+        new_directions = map[pos]["directions"]
+        print(f"You can go {new_directions}.")
 
     #if they enter anything else,
     else:
         print("You can't go that way...")
-
+        
     return pos
-
+ 
+def cantake(pos, item):
+    #if what they write matches the item 
+    if item in map[pos]["items"]:
+        return True
+    else:
+        return False   
+    
+def take(pos, item):
+    """Take an item, and see if it is in the list of items.
+    If it is there, add the item to player's inventory."""
+    
+    #if what they write matches the item 
+    if cantake(pos, item) is True:
+        #add item to their inventory
+        inventory.append(item)
+            
+        #remove item from pos so they can't get it again
+        map[pos]["items"].remove(item)
+                
+    #shows them their inventory
+    print("Your inventory: "+ str(inventory))
+    
 #main loop
 def game():
     """Main loop for the game"""
@@ -77,7 +102,20 @@ def game():
             direction = user_input.split(" ")[1]
             #move them to new position
             pos = move(pos, direction, map)
-        
+            
+            #if there are items in the new position, and if the key is not null,
+            #print the items
+            if "items" in map[pos] and map[pos]["items"]:
+                print("There is: " + ', '.join(map[pos]["items"]))
+    
+        #if they want to take/pick up something
+        elif user_input.startswith("TAKE"):
+            
+            item = user_input.split(" ")[1]
+            
+            take(pos, item)
+
+        #if they type something different
         else:
             print("I don't understand that command.")
 

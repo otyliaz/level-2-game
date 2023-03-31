@@ -1,9 +1,6 @@
-#version 1.2:
-#added a function to split the string automatically
-# checklist: print the inventory without the carré brackets
-#          :if there's nothing to take, tell the user
-
-#take function doesnt work well, it can't compare what the user wrote from whats in the code
+#version 1.1:
+#the player can now pick up things
+#the item will be removed from the pos and then added to the inventory.
 
 WIDTH = 3
 STARTING_POS = 0
@@ -30,24 +27,17 @@ map = [{"desc":"You are in A1. This is the starting position.", "pos":0, "direct
 {"desc":"You are in C2", "pos":7, "directions": "N/E/W"},
 {"desc":"You are in C3", "pos":8, "directions": "N/W"},]
 
-def canmove(pos, direction):
-    #finds the available directions for this pos
-    available_directions = map[pos]["directions"]
-
-    #if the direction that they entered is valid,
-    if direction[0] in available_directions:
-        return True
-    else:
-        return False
-
-def move(pos, direction):
+def move(pos, direction, map):
     """Takes the player position and the direction to move to (N, S, E, or W).
         Returns the new pos of the player after moving."""
+
+    #finds the available directions for this pos
+    available_directions = map[pos]["directions"]
     
-    #direction=direction.upper()
+    direction=direction.upper()
     
     #if the direction entered is available,
-    if canmove(pos, direction): 
+    if direction[0] in available_directions: 
         if direction == "E" or direction == "EAST":
             pos += 1
         elif direction == "W" or direction == "WEST":
@@ -71,15 +61,8 @@ def move(pos, direction):
  
 def cantake(pos, item):
     """checks if the item that the user entered is actually there"""
-    #checks if the pos has the key "items", and that it is not null.
-    if "items" in map[pos] and map[pos]["items"]:
-
-        #checks if the item that the user entered matches the real one
-        if item in map[pos]["items"]:
-            return True
-        else:
-            return False
-    
+    if item in map[pos]["items"]:
+        return True
     else:
         return False   
     
@@ -88,27 +71,16 @@ def take(pos, item):
     If it is there, add the item to player's inventory."""
     
     #if what they write matches the item 
-    if cantake(pos, item):
+    if cantake(pos, item) is True:
         #add item to their inventory
         inventory.append(item)
             
         #remove item from pos so they can't get it again
         map[pos]["items"].remove(item)
-
-    else:
-        print("That item does not exist, sorry")
                 
     #shows them their inventory
     print("Your inventory: "+ str(inventory))
     
-
-def split_string(string):
-    """Splits the user's input into two parts, e.g "go", "north", and then returns it."""
-    command = string.split(" ")[0]
-    noun = string.split(" ")[1]
-
-    return command, noun
-
 #main loop
 def game():
     """Main loop for the game"""
@@ -121,33 +93,31 @@ def game():
     while True:
         #asks player what they want to do
         user_input = input("What do you want to do? ").upper()
-        
-        #splits input into half
-        command, noun = split_string(user_input)
-        
+
         #if they want to go somewhere..
-        if command == "GO":
+        if user_input.startswith("GO"):
             
-            #direction is the second part of the input
-            direction = noun
+            #direction is the direction that they want to go
+            direction = user_input.split(" ")[1]
             #move them to new position
-            pos = move(pos, direction)
+            pos = move(pos, direction, map)
             
-            #if the key "items" exists for the new pos, and it is not empty,
+            #if there are items in the new position, and if the key is not null,
             #print the items
             if "items" in map[pos] and map[pos]["items"]:
                 print("There is: " + ', '.join(map[pos]["items"]))
     
         #if they want to take/pick up something
-        elif command == "TAKE":
+        elif user_input.startswith("TAKE"):
 
-            #item is the second part of the input
-            item = noun
-            #takes item
+            item = user_input.split(" ")[1]
+            
             take(pos, item)
 
         #if they type something different
         else:
             print("I don't understand that command.")
+
+game()
 
 

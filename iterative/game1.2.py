@@ -1,9 +1,7 @@
-#version 1.2:
-#it now prints the inventory without square brackets,
-#it also checks if the item can actually be taken.
-
-#make a thing that prints the inventory when they say inv
-#fix the input thing so that it can stop erroring
+#version 1.3:
+#last. make a thing that prints the inventory when they say inv
+#last. make a help! thing
+#1. fix the input thing so that it can stop erroring
 
 WIDTH = 3
 STARTING_POS = 0

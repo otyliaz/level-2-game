@@ -1,10 +1,22 @@
 #version 2.0:
+#fixed the input so that it doesn't error when there is bad input
+#testing:
+#game()
+#    You are in A1. This is the starting position.
+#    You can go S/E.
 
-#checklist:
-#make a thing that prints the inventory when they say inv
-#make a help
-#make a thing like u can only go somewhere if u have this.
-#make the map 💀
+#    What do you want to do? gonorth
+#    I don't understand that command.
+
+#    What do you want to do? fjsiod north
+#    I don't understand that command.
+
+#    What do you want to do? go north
+#    You can't go that way...
+    
+#    What do you want to do? go east
+#    You are in A2.
+#    You can go S/E/W.
 
 import re
 

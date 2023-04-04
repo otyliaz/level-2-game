@@ -1,8 +1,17 @@
 #version 2.0:
+#-made it print inventory when they type inv:
+#What do you want to do? inv
+#Your inventory: KNIFE
+
+#-made it print help when they type help; like this:
+#What do you want to do? help
+
+#    Type "go [direction]" to go a direction.
+#    Type "inv" to show your inventory.
+#    Type "take [item] to pick up an item.
 
 #checklist:
-#make a thing that prints the inventory when they say inv
-#make a help
+    
 #make a thing like u can only go somewhere if u have this.
 #make the map 💀
 
@@ -144,6 +153,20 @@ def game():
         #asks player what they want to do
         user_input = input("\nWhat do you want to do? ").upper()
 
+        #if they type "inv", print their inventory
+        if user_input == "INV": 
+            print("Your inventory: "+ ', '.join(inventory))
+            continue
+
+        #if they type "help", print some help 
+        if user_input == "HELP":
+            print("""
+    Type "go [direction]" to go a direction.
+    Type "inv" to show your inventory.
+    Type "take [item] to pick up an item.""")
+            continue
+
+        #if the string isn't in the right format
         if split_string(user_input) is False: 
             user_input = print("I don't understand that command.")
             continue

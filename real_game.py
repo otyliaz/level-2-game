@@ -1,15 +1,14 @@
 #version 2.0:
-#--made it print inventory when they type inv, prints this:
+#-made it print inventory when they type inv:
 #What do you want to do? inv
 #Your inventory: KNIFE
 
-#--made it give some help when they type help; prints this:
+#-made it print help when they type help; like this:
 #What do you want to do? help
 
 #    Type "go [direction]" to go a direction.
-#    Type "take" [item] to pick up an item.
 #    Type "inv" to show your inventory.
-#    Type "exit" to quit the game.
+#    Type "take [item] to pick up an item.
 
 #checklist:
     
@@ -22,15 +21,17 @@
 
 import re
 
-WIDTH = 3
+WIDTH = 10
 STARTING_POS = 0
 
 inventory = []
 #################################
-#TEST map size: 4x3, so 0 to 11 pos
-#        N
-#      W-+-E
-#        S
+#map size: 8x10, so 0 to 79 pos
+#        N      |----10---------|
+#      W-+-E    |               |
+#        S      8               8
+#               |               |
+#               |-----10--------|
 #################################
 
 #the map. "desc" is the description of the place,
@@ -38,9 +39,17 @@ inventory = []
 #"directions" is the available directions that the player can go
 #"items" is the items that are in the pos
 #"req" is the requirements to enter this square
-map = [{"desc":"You are in A1. This is the starting position.", "pos":0, "directions":"S/E"}, 
-{"desc":"You are in A2.", "pos":1, "directions":"S/E/W"},
-{"desc":"You are in A3.", "pos":2, "directions": "S/W", "items":["KNIFE"]},
+map = [{"desc":"You are in A1. Your high-school is to the south-east. The city wall surrounds you to the north a", "pos":0, "directions":"S/E"}, 
+{"desc":"You are in A2. Your high-school is directly south of you.", "pos":1, "directions":"E/W"},
+{"desc":"You are in A3. Your high-school is directly south of you.", "pos":2, "directions": "E/W"},
+{"desc":"You are in A4. Your high-school is directly south of you.", "pos":3, "directions": "E/W"},
+{"desc":"You are in A5. Your high-school is to the south-west of you.", "pos":4, "directions": "S/E/W"},
+{"desc":"You are in A6. Your high-school is directly south of you.", "pos":5, "directions": "E/W"},
+{"desc":"You are in A7. Your high-school is directly south of you.", "pos":6, "directions": "E/W"},
+{"desc":"You are in A8. Your high-school is directly south of you.", "pos":7, "directions": "E/W"},
+{"desc":"You are in A9. Your high-school is directly south of you.", "pos":8, "directions": "E/W"},
+{"desc":"You are in A10. Your high-school is directly south of you.", "pos":9, "directions": "E/W"},
+
 {"desc":"You are in B1.", "pos":3, "directions": "N/S/E", "items":["ROPE"]},
 {"desc":"You are in B2.", "pos":4, "directions": "N/S/E/W"},
 {"desc":"You are in B3.", "pos":5, "directions": "N/S/W"},
@@ -50,6 +59,7 @@ map = [{"desc":"You are in A1. This is the starting position.", "pos":0, "direct
 {"desc":"You are in D1, only allowed if you have 'rope'", "pos":9, "directions": "N/E", "req":"ROPE"},
 {"desc":"You are in D2, only allowed if you have 'rope'", "pos":10, "directions": "N/E/W", "req":"ROPE"},
 {"desc":"You are in D3, only allowed if you have 'rope'", "pos":11, "directions": "N/W", "req":"ROPE"},]
+
 
 def canmove(pos, direction):
     #finds the available directions for this pos

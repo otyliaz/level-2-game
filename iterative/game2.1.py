@@ -12,15 +12,6 @@
 
 # I have a map now, descriptions aren't finished yet
 
-#checklist:
-    
-#make a thing like u can only go somewhere if u have something:
-## "you can't go there, you need _____!"
-#if pos is <=8, can't go to >8. if pos is >8, can go back.
-#exit command
-#finish map,
-#i think i need to make the printing of stuff seperate from the moving function.
-
 import re
 
 WIDTH = 10

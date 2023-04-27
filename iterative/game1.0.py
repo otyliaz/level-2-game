@@ -1,6 +1,6 @@
 #version 1.0:
 #I have a 3x3 map numbered A1 to C3, with a description, a position and valid directions.
-#This map is just to test the function.
+#This map is just to test the move function.
 #The position number goes from 0 to 8.
 #The player can move according to available directions until they quit.
 

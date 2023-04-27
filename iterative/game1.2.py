@@ -1,4 +1,4 @@
-#version 1.3:
+#version 1.2:
 #last. make a thing that prints the inventory when they say inv
 #last. make a help! thing
 #1. fix the input thing so that it can stop erroring
@@ -147,4 +147,5 @@ def game():
         else:
             print("I don't understand that command.")
 
+game()
 

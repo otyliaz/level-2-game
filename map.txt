@@ -1,9 +1,0 @@
-map = [{"desc":"You are in your room.", "pos":1, "directions":"ES"}, 
-{"desc":"You are in your living room.", "pos":2, "directions":"SW"},
-{"desc":"You are to the west of your house.", "pos":3, "directions": "NES"},
-{"desc":"You are in the bathroom.", "pos":4, "directions": "N"},
-{"desc":"You are in your backyard.", "pos":5, "directions": "NES"},
-{"desc":"You see the road to your west, and your house to the northwest.", "pos":6, "directions": "NSEW"},
-{"desc":"You see the road to your west, and your house to the north.", "pos":7, "directions": "NSEW"},
-{"desc":"You see the road to your west, and your house to the north.", "pos":8, "directions": "NSEW"},
-{"desc":"You see the road to your west, and your house to the north.", "pos":8, "directions": "NSEW"},]

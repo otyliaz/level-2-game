@@ -1,18 +1,22 @@
-#version 1.2:
-#last. make a thing that prints the inventory when they say inv
-#last. make a help! thing
-#1. fix the input thing so that it can stop erroring
+#version 2.0:
+#fixed the input so that it doesn't error when there is bad input; splits the input up into 2 parts
+
+#made the canmove function (checks if the player can move in that direction), separate from the move function (actually moves the player.)
+#
+#changed the take function so that it stops giving errors when the player tries to take something that's not there.
+
+import re
 
 WIDTH = 3
 STARTING_POS = 0
 
 inventory = []
-############################
+#################################
 #map size: 3x3, so 0 to 8 pos
 #        N
 #      W-+-E
 #        S
-############################
+#################################
 
 #the map. "desc" is the description of the place,
 #"pos" is the player position in numbers,
@@ -97,20 +101,40 @@ def take(pos, item):
 
     else:
         print("That item does not exist, sorry")
+
+def regex(string):
+    """Check if the user's input matches the ___ ___ pattern."""
     
+    #regular expression pattern
+    pattern = r"[A-Za-z]+\s+[A-Za-z]+"
+
+    #if it matches, return True. if not, return False
+    if (re.match(pattern, string)):
+        return True
+    
+    else:   
+        return False  
 
 def split_string(string):
     """Splits the user's input into two parts, e.g "go", "north", and then returns it."""
-    command = string.split(" ")[0]
-    noun = string.split(" ")[1]
 
-    return command, noun
+    #if the player's input is in the right format,
+    if regex(string):
+
+        #split it into two parts
+        command = string.split(" ")[0]
+        noun = string.split(" ")[1]
+
+        return command, noun
+    
+    else: #else return false
+        return False 
 
 #main loop
 def game():
     """Main loop for the game"""
     
-    #starting position in A1
+    #starting description of the game
     pos=STARTING_POS
     print(map[pos]["desc"])
     print("You can go S/E.")
@@ -118,9 +142,13 @@ def game():
     while True:
         #asks player what they want to do
         user_input = input("\nWhat do you want to do? ").upper()
-        
-        #splits input into half
-        command, noun = split_string(user_input)
+
+        if split_string(user_input) is False: 
+            user_input = print("I don't understand that command.")
+            continue
+        else:
+            #splits input in half
+            command, noun = split_string(user_input) 
         
         #if they want to go somewhere..
         if command == "GO":
@@ -146,6 +174,5 @@ def game():
         #if they type something different
         else:
             print("I don't understand that command.")
-
+            
 game()
-

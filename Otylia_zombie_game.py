@@ -1,11 +1,8 @@
-#version 3.1:
-# going on the road now has a 20% chance of killing you. 
-# made a function to fight zombies: if you have a knife, they will die 100%.
-#   if you don't have a knife, you have a 50% chance of getting killed, or 50% of being safe.
+#FINAL VERSION
+#minor changes: added a hint function so that the player can get guidance when they type "hint"
 
-#checklist:
-#draw the map better and add screenshot.
-#continue the testing thing
+
+###              ZOMBIE APOCALYPSE GAME BY OTYLIA ZENG                ################################
 
 import re, time, random
 
@@ -13,20 +10,23 @@ WIDTH = 10 #the width of the map
 STARTING_POS = 27 #starting position
 death = False #death variable; turns True when the player dies.
 
+#the player's inventory. starts empty but will fill up when they pick up things along the way.
 inventory = []
-#################################
-#map size: 6x10, so 0 to 59 pos
-#        N      |----10---------|
-#      W-+-E    |               |
-#        S      6               6
-#               |               |
-#               |-----10--------|
-#################################
 
-#the map. "desc" is the description of the place,
-#"pos" is the player position in numbers,
-#"directions" is the available directions that the player can go
-#"items" is the items that are in the pos
+######################################
+#  map size: 6x10, so 0 to 59 pos    #
+#        N      |----10---------|    #
+#      W-+-E    |               |    #
+#        S      6               6    #
+#               |               |    #
+#               |-----10--------|    #
+######################################
+
+#the map. 
+# "desc" is the description of the place/pos that the player is in,
+#"pos" is the player position in numbers (0 to 59),
+#"directions" is the available directions that the player can go from there,
+#"items" is the items that are available for pick up in that pos.
 map = [
 {"desc":"A1. Your high-school is to the south-east. The city wall surrounds you from the north and west.", "pos":0, "directions":"S/E"}, 
 {"desc":"A2. The back wall of your high-school is directly south of you. The city wall surrounds you from the north.", "pos":1, "directions":"E/W"},
@@ -40,9 +40,9 @@ map = [
 {"desc":"A10. You see your backyard to the south. The city wall surrounds you from the north and the east", "pos":9, "directions": "S/W"},
 
 {"desc":"B1. The city wall surrounds you from the west. The wall of your high-school is directy to the east of you. Through the window you can see that the room is infested with zombies.", "pos":10, "directions": "N/S"},
-{"desc":"B2. You feel a zombie grab your neck. Oh no! You're infected.", "pos":11}, # no directions because you die if you come here
+{"desc":"B2. You feel a zombie grab your neck. Oh no! You're infected.", "pos":11}, # no directions because you die if you enter this pos.
 {"desc":"B3. You made it another step, but you can still feel zombies surrounding you.\nAll you need to do is just get to the stairs.", "pos":12, "directions": "S/E/W"},
-{"desc":"B4. You made it to the stairs.", "pos":13}, ############# winning scene
+{"desc":"B4. You made it to the stairs.", "pos":13}, ############# winning pos !!!!!!!!!
 {"desc":"B5. The wall of your high-school is directly to the west of you. Directly east, there is a busy road.", "pos":14, "directions": "N/S/E"},
 {"desc":"B6. You're in the middle of the road.", "pos":15, "directions": "N/S/E/W"},
 {"desc":"B7. There is a busy road directly to the west, and your house is to the south-east.", "pos":16, "directions": "N/S/E/W"},
@@ -54,7 +54,7 @@ map = [
 {"desc":"C2. You step right into the cold embrace of a zombie. You are bitten and die.", "pos":21}, 
 {"desc":"C3. You enter the school. It's dark inside, and you can't seem to find the light switch. \nYou can feel the presence of some things that really shouldn't be there. \nAll you need to do is find the stairs, and you'll be safe. Any wrong move will cost you.", "pos":22, "directions": "N/S/E/W"},
 {"desc":"C4. Oh no! You went the wrong way, and walked straight towards a gargling sound. \nThe zombie turns to grab you, and you get infected.", "pos":23},
-{"desc":"C5. The side of your school is directly to the west, and there is a busy road to the east.", "pos":24, "directions": "N/S/E"},
+{"desc":"C5. The side your school is directly to the west, and there is a busy road to the east.", "pos":24, "directions": "N/S/E"},
 {"desc":"C6. You are in the middle of the road.", "pos":25, "directions": "N/S/E/W"},
 {"desc":"C7. Your house is directly to the east, and there is a busy road on the west.", "pos":26, "directions": "N/S/E/W"},
 {"desc":"C8. You are in your room. The living room is to the east.", "pos":27, "directions": "E"}, ############# starting pos!!!!!!!
@@ -69,13 +69,13 @@ map = [
 {"desc":"D6. You are in the middle of the road.", "pos":35, "directions": "N/S/E/W"},
 {"desc":"D7. The road is to the west, and your house is to the east.", "pos":36, "directions": "N/S/E/W"},
 {"desc":"D8. You can enter your room to the north, and another part of your house is on the west.", "pos":37, "directions": "N/S/W"},
-{"desc":"D9. You are in your bathroom. Your living room is to the north.", "pos":38, "directions": "N", "items":["BANDAID"]},
+{"desc":"D9. You are in your bathroom. Your living room is to the north.", "pos":38, "directions": "N", "items":["TOOTHBRUSH"]},
 {"desc":"D10. Your house is on the west. The city wall surrounds you to the east.", "pos":39, "directions": "N/S"},
 
 {"desc":"E1. The city wall surrounds you from the west.", "pos":40, "directions": "N/S/E",},
 {"desc":"E2. There is some sort of small abandoned warehouse to the east. Your high-school is somewhere to the north.", "pos":41, "directions": "N/S/E/W"},
-{"desc":"E3. You are inside the storage warehouse. There's a few zombies wandering around inside, be careful.", "pos":42, "directions": "N/S/E/W", "items":["ROPE"]},
-{"desc":"E4. You are inside the storage warehouse.", "pos":43, "directions": "N/S/E/W", "zombie":True}, ######################## should encounter a fightable zombie here
+{"desc":"E3. You are inside the storage warehouse. There's a few zombies wandering around inside, be careful.", "pos":42, "directions": "N/S/E/W", "items":["ROPE"]}, #rope has no use, just there for decoration.
+{"desc":"E4. You are inside the storage warehouse.", "pos":43, "directions": "N/S/E/W", "zombie":True}, # encounters a fightable zombie here
 {"desc":"E5. There is some sort of small abandoned warehouse to the west. \nYou can see that there are a few zombies roaming around inside, let's hope you don't encounter one. \nThere is a busy road to the east.", "pos":44, "directions": "N/S/E/W"},
 {"desc":"E6. You are in the middle of a busy road.", "pos":45, "directions": "N/S/E/W"},
 {"desc":"E7. There is a busy road to the west. You can see your house to the north-east.", "pos":46, "directions": "N/S/E/W" },
@@ -97,9 +97,13 @@ map = [
 
 #----------------------game functions--------------------------------------------------------------
 
+#checks if the player can move in the direction that they want to go
 def canmove(pos, direction):
-    """This function checks if the"""
-    #finds the available directions for this pos
+    """This function checks if the player can move in the direction that they want to go.
+    It compares the direction that they enter to the available ones listed in the map. 
+    If the direction is valid, return True, otherwise return False"""
+    
+    #finds the available directions for this pos from the map
     available_directions = map[pos]["directions"]
 
     #if the direction that they entered is valid,
@@ -108,8 +112,9 @@ def canmove(pos, direction):
     else:
         return False    
 
+#move function.
 def move(pos, direction):
-    """Takes the player position and the direction to move to (N, S, E, or W).
+    """Takes the player position and the direction they want to move to (N, S, E, or W).
         Returns the new pos of the player after moving."""
     
     #direction=direction.upper()
@@ -133,29 +138,34 @@ def move(pos, direction):
         
     return pos
 
+#this function describes the new pos that the player goes to.
 def describe(pos):
     """A function that prints out the description of the player's new position, and things related to that, i.e the directions that they can go and the items that are there.
-    This function also contains the fight function."""
+    This function also contains the fight function, and it returns True if the player dies, or False if the player still lives."""
 
     #prints the new pos description
     print("\n"+map[pos]["desc"])
 
+    #if the zombie has already been killed in this pos, 
     if "zombie" in map[pos] and map[pos]["zombie"] is False:
         print("There is a dead zombie body at your feet")
 
-    #if there is a zombie in this pos,
+    #if there is a alive (?) zombie in this pos,
     if "zombie" in map[pos] and map[pos]["zombie"]:
-        print("There is a zombie staring directly at you.")
-        if fight(pos) == True:
-            return True
+        
+        #this is a list of things that it can say when there is a zombie.
+        print_list=["There is a zombie staring directly at you.","You come face-to-face with a zombie.","You encounter a vicious zombie."]
+        print(random.choice(print_list)) #chooses a random phrase and says it.
+        if fight(pos) == True: #if True, means the player died.
+            return True 
     
     #if they are in these positions, they have a 20% chance of dying (in the road, 20% chance of getting ran over.)    
     if pos in (5, 15, 25, 35, 45, 55):
-        chance=random.randint(1,5) #gets a random number from 1 to 5
+        chance=random.randint(1,5) #generates a random number from 1 to 5
         if chance == 1: # if the number is 1, the player gets ran over.
             time.sleep(1)
             print("You were unlucky, and got ran over by a zombie-driven car.")
-            global death
+            global death  #changes the death variable to True
             death = True
             return death
 
@@ -168,12 +178,14 @@ def describe(pos):
 
     #prints the directions that the player can go
     if "directions" in map[pos]:
-        new_directions = map[pos]["directions"]
+        new_directions = map[pos]["directions"] #gets the directions from the map
         print(f"You can go {new_directions}.")
         time.sleep(1)
 
+#this function controls what happens what the player encounters a zombie.
 def fight(pos):
-    """When the player encounters a zombie, this function will decide if they get to kill the zombie or die."""
+    """When the player encounters a zombie, this function will decide if they get to kill the zombie or die.
+    Returns False if the player survives, and return True if the player dies."""
     
     #then check if they have picked up a knife.
     if "KNIFE" in inventory: #if they have the knife, then they will be able to kill the zombie.
@@ -199,8 +211,10 @@ def fight(pos):
             print("Lucky! You managed to ward off the zombie. Try not to run into him again.")
             return False
 
+#This function checks if the player can take an item.
 def cantake(pos, item):
-    """checks if the item that the user entered is actually there"""
+    """Checks if the item that the user wants to take is actually there.
+    If it is there, return True, if it's not there, return False"""
     
     #checks if the pos has the key "items", and that it is not null.
     if "items" in map[pos] and map[pos]["items"]:
@@ -215,6 +229,7 @@ def cantake(pos, item):
     else:
         return False   
     
+#this function puts the item in the inventory
 def take(pos, item):
     """Take an item, and see if it is in the list of items.
     If it is there, add the item to player's inventory."""
@@ -230,10 +245,13 @@ def take(pos, item):
         #shows them their inventory
         print("Your inventory: "+ ', '.join(inventory))
 
-    else:
+    #if that item's not there, print this.
+    else: 
         print("That item does not exist, sorry")
             
 #functions to check the player's input-----------------------------------------------------------------------
+
+#this function matches the user input with the regex pattern
 def regex(string):
     """Check if the user's input matches the ___ ___ pattern.
     If it does, return True; if it doesn't, return False"""
@@ -248,8 +266,10 @@ def regex(string):
     else:   
         return False  
 
+#This function splits the user's input into 2 parts
 def split_string(string):
-    """Splits the user's input into two parts, e.g "go", "north", and then returns it."""
+    """Splits the user's input into two parts, e.g "go", "north", and then returns it.
+    If it can't split, then return False."""
 
     #if the player's input is in the right format,
     if regex(string):
@@ -267,7 +287,7 @@ def split_string(string):
 
 #main loop for the gameplay
 def main_loop():
-    """Main loop for the game"""
+    """This is the main loop that runs the game."""
     
     #starting description of the game
     pos=STARTING_POS 
@@ -288,28 +308,32 @@ def main_loop():
     """)
     time.sleep(2)
     print("Get out of your house and find your way to safety.")
-    print("You can go EAST (E).")
     time.sleep(2)
     print("\nIf you are stuck, type \"HELP\" to get some help on how to navigate the game. \nAlphanumeric coordinates (A1, B7, etc.) are provided for easier navigation.")
     time.sleep(2)
-    print("\nThere is an emergency squad that will guide you when you need help, but they will only help you once. \nType \"HINT\" only when you need to, for a guide on where you need to go.")
+    print("\nThere is an emergency squad that will guide you when you need any guidance, but they will only help you once. \nType \"HINT\" only when you need to, for a guide on where you need to go.")
+    time.sleep(2)
+    print("You can go EAST (E).")
     time.sleep(2)
     
+    #loops this
     while True:
-        #asks player what they want to do
+        #asks the player what they want to do
         user_input = input("\nWhat do you want to do? ").upper()
 
 #-------help commands-------------------
 
-        #if they type "inv", print their inventory
+        #if they type "inv", show them their inventory
         if user_input == "INV": 
             print("Your inventory: "+ ', '.join(inventory))
             continue
 
+        #if they type exit, exit the game.
         if user_input == "EXIT":
+            print("Thank you for playing my game!")
             break
 
-        #if they type "help", print some help 
+        #if they type "help", print some help on the controls
         if user_input == "HELP":
             print("""
     Type "go [direction]" to go a direction. You can type "N" or "North" to go north.
@@ -319,10 +343,12 @@ def main_loop():
             time.sleep(1)
             continue
         
+        #if they type "hint", give them some hints on where to go.
         if user_input == "HINT":
             print("""
     You need to find your way to school, and the helicopter will come pick you up. 
     When you're crossing the road, you need to look out for cars. Those zombies are ruthless.
+    Find something to defend yourself.
     The gate to the school is locked, and you'll need to find a key.
     And be careful, once you're in the school you will be surrounded, and there's only one path to survival.""")
             time.sleep(1)
@@ -343,7 +369,7 @@ def main_loop():
             
             #direction is the second part of the input, i.e north
             direction = noun
-            #move them to new position
+            #move them to new position using move function
             pos = move(pos, direction)
     
         #if they want to take/pick up something
@@ -351,7 +377,7 @@ def main_loop():
 
             #item is the second part of the input
             item = noun
-            #takes item
+            #takes item using take function
             take(pos, item)
 
         #if they type something different
@@ -361,8 +387,9 @@ def main_loop():
 #----------------winning/losing conditions, special conditions---------------------
 
         #if they have the key, then they can go inside the school;
-        #   WHEN (!!) they pick up the key, I add another available direction to pos=32 so they are able to go north into the school; 
         if "KEY" in inventory:
+            # WHEN(!!) they pick up the key, I add another available direction to pos=32
+            #       so they are able to go north into the school; 
             map[32]["directions"]="N/S/E/W"
             #then I change the description of the pos=32 square so that it says they used the key to unlock the door.
             #this will show when they arrive there with the key.
@@ -373,9 +400,11 @@ def main_loop():
         if "KEY" in inventory and pos == 32:
             inventory.remove("KEY")   
                       
-        #if they go into these pos, they die instantly (certain places inside the school where there are zombies.)  
+        #if they go into these places, they die instantly (certain places inside the school where there are zombies.)  
+        # OR, if the death variable is True (being killed by a zombie or )
         if pos in (11, 21, 23) or death == True:
             time.sleep(3)
+            #prints game over.
             print(""" _______  _______  _______  _______    _______           _______  _______ 
 (  ____ \(  ___  )(       )(  ____ \  (  ___  )|\     /|(  ____ \(  ____ )
 | (    \/| (   ) || () () || (    \/  | (   ) || )   ( || (    \/| (    )|
@@ -389,6 +418,7 @@ def main_loop():
             break 
             
         #if they make it to the winning pos, they win!
+        #print the winning scene
         if pos == 13:
             time.sleep(0.5)
             print("You run up the stairs, with zombies chasing at your feet, and you manage to get to the roof of the building, shutting them out.")
@@ -405,4 +435,5 @@ def main_loop():
             print("\nThank you for playing this game!")
             break          
     
+#run the main loop for the game!    
 main_loop()
